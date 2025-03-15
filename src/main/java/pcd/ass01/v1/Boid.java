@@ -24,9 +24,7 @@ public class Boid {
     public void update(BoidsModel model) {
 
         /* change velocity vector according to separation, alignment, cohesion */
-
         List<Boid> nearbyBoids = getNearbyBoids(model);
-
         V2d separation = calculateSeparation(nearbyBoids, model);
         V2d alignment = calculateAlignment(nearbyBoids, model);
         V2d cohesion = calculateCohesion(nearbyBoids, model);
@@ -36,7 +34,6 @@ public class Boid {
                 .sum(cohesion.mul(model.getCohesionWeight()));
 
         /* Limit speed to MAX_SPEED */
-
         double speed = vel.abs();
 
         if (speed > model.getMaxSpeed()) {

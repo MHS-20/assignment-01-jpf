@@ -1,8 +1,11 @@
 package pcd.ass01.v1;
 
+import javax.swing.*;
+
 public class BoidsSimulation {
 
 	final static int N_BOIDS = 1500;
+	static int n_boids;
 
 	final static double SEPARATION_WEIGHT = 1.0;
     final static double ALIGNMENT_WEIGHT = 1.0;
@@ -18,9 +21,10 @@ public class BoidsSimulation {
 	final static int SCREEN_HEIGHT = 800; 
 	
 
-    public static void main(String[] args) {      
+    public static void main(String[] args) {
+		promptForBoidCount();
     	var model = new BoidsModel(
-    					N_BOIDS, 
+    					n_boids,
     					SEPARATION_WEIGHT, ALIGNMENT_WEIGHT, COHESION_WEIGHT, 
     					ENVIRONMENT_WIDTH, ENVIRONMENT_HEIGHT,
     					MAX_SPEED,
@@ -31,4 +35,23 @@ public class BoidsSimulation {
     	sim.attachView(view);
     	sim.runSimulation();
     }
+
+	public static void promptForBoidCount() {
+		String input = JOptionPane.showInputDialog(null, "Enter number of boids:", "Boid Count", JOptionPane.QUESTION_MESSAGE);
+
+		// Verifica l'input
+		if (input != null && !input.isEmpty()) {
+			try {
+				int numBoids = Integer.parseInt(input);
+
+				if (numBoids > 0) {
+					n_boids = numBoids;
+				} else {
+					n_boids = N_BOIDS;
+				}
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(null, "Invalid input. Please enter a valid number.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+			}
+		}
+	}
 }

@@ -66,7 +66,6 @@ public class BoidsSimulator {
                     framerate = (int) (1000 / dtElapsed);
                 }
             }
-
         }
     }
 }
