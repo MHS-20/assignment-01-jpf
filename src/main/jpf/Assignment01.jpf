@@ -1,4 +1,4 @@
-target = pcd.ass01.BoidsSimulation
+target = pcd.ass01.v0.BoidsSimulation
 
 classpath=build/classes/java/main
 
