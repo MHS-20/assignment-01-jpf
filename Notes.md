@@ -1,5 +1,8 @@
 ### Version 1
 
+Ho tolto final dalla lista in BoidModel perché il numero di boid non lo so a priori. 
+
+
 Should I make a thread for each boid? When a boid need to update itself in the shared array, it requires a lock. We can have concurrent readers and concurrent writers, but not a mix of them, because writers always write different boids.
 
 Therefore, I can use a barrier, wait for all threads to compute their new state (everybody reads) and then everybody writes its new state. But is this the correct way to update the simulation, or we are supposed to make the new state available to other boids asap?
@@ -26,4 +29,3 @@ g.fillOval(px,py, 5, 5); // is this the bottleneck?
 ```
 
 The start/stop button has to stop all threads, but keeping a thread array it's straightforward.
-

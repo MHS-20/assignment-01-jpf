@@ -64,6 +64,7 @@ public class BoidsView implements ChangeListener {
 
 		frame.setContentPane(cp);
         frame.setVisible(true);
+
 	}
 
 	public void setToggleSimulation(Runnable toggleSimulation) {

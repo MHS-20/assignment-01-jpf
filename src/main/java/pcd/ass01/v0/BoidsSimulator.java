@@ -1,5 +1,6 @@
 package pcd.ass01.v0;
 
+import javax.swing.*;
 import java.util.Optional;
 
 public class BoidsSimulator {
@@ -66,7 +67,6 @@ public class BoidsSimulator {
                     framerate = (int) (1000 / dtElapsed);
                 }
             }
-
         }
     }
 }
