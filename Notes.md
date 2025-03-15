@@ -1,8 +1,13 @@
 ### Version 1
 
+- Synchronized nel model serve?
+- Più reader possono accedere ad un boid, ma il writer deve essere solo.
+- Dividere tra Reader & Writer? Altrimenti come li sincronizzi?
+- Parallelizzare anche la gui?
+
 Provare a fare un thread per ogni boid, ognuno calcola il proprio nuovo stato in parallelo. Quando tutti hanno finito di leggere e calcolare (barrier), posso aggiornarsi tutti in parllelo, perché ognuno aggiorna sé stesso e non ci sono conflitti.
 
-Provando senza rendere Boid Runnable, è più lento di prima, forse perché crei nuovi thread per ogni boid ad ogni iterazione. La lista di Boid può diventare una lista di thread.
+Con un thread per ogni boid è più lento di prima, ci sono troppi thread attivi. Si dovrebbero creare meno thread ed ognuno lavora su un gruppo di boid. Usare N thread per spezzare la lista di Boid, ed ognuno si occupa di un sottogruppo, però devi mettere un mutex su ogni boid per aggiornarlo.
 
 In Boids class, operations can be made parallel:
 
@@ -26,4 +31,3 @@ g.fillOval(px,py, 5, 5); // is this the bottleneck?
 ```
 
 The start/stop button has to stop all threads, but keeping a thread array it's straightforward.
-

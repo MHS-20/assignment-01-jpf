@@ -2,6 +2,8 @@ package pcd.ass01.v1;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 
 public class Boid {
 
@@ -11,11 +13,12 @@ public class Boid {
     private V2d separation;
     private V2d alignment;
     private V2d cohesion;
+
     private List<Boid> nearbyBoids;
 
     public Boid(P2d pos, V2d vel) {
         this.pos = pos;
-        this.vel = vel;
+        this.vel = vel;;
     }
 
     public P2d getPos() {
@@ -26,7 +29,8 @@ public class Boid {
         return vel;
     }
 
-    public void computeUpdate(BoidsModel model){
+
+    public void computeUpdate(BoidsModel model) {
         nearbyBoids = getNearbyBoids(model);
         separation = calculateSeparation(nearbyBoids, model);
         alignment = calculateAlignment(nearbyBoids, model);

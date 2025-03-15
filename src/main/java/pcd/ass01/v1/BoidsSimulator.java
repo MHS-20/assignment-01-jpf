@@ -1,14 +1,15 @@
 package pcd.ass01.v1;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
 
 public class BoidsSimulator {
 
     private BoidsModel model;
     private Optional<BoidsView> view;
 
-    private static final int FRAMERATE = 50;
+    private static final int FRAMERATE = 100;
     private int framerate;
 
     private volatile boolean running;
@@ -44,27 +45,36 @@ public class BoidsSimulator {
     }
 
     public void runSimulation() {
+        List<Boid> partition;
+        var boids = model.getBoids();
+        CyclicBarrier barrier = new CyclicBarrier(boids.size());
+
+        int numCores = Runtime.getRuntime().availableProcessors();
+        int step = boids.size() / numCores;
+        BoidWorker[] workers = new BoidWorker[numCores];
+
         while (running) {
             var t0 = System.currentTimeMillis();
-            var boids = model.getBoids();
-            CountDownLatch latch = new CountDownLatch(boids.size());
+            boids = model.getBoids();
 
-            // parallel compute update
-            for (Boid boid : boids) {
-                new Thread(() -> {
-                    boid.computeUpdate(model);
-                    latch.countDown();
-
-                    // wait for all threads
-                    try {
-                        latch.await();
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                    }
-
-                    boid.update(model);
-                }).start();
+            for (int i = 0; i < numCores; i++) {
+                partition = boids.subList(i * step, (i + 1) * step);
+                workers[i] = new BoidWorker(barrier, boids, partition, model);
+                workers[i].start();
             }
+
+            for (BoidWorker w : workers) {
+                try {
+                    w.join();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+//            for (Boid boid : boids) {
+//                    boid.computeUpdate(model);
+//                    boid.update(model);
+//            }
 
             if (view.isPresent()) {
                 view.get().update(framerate);
