@@ -14,6 +14,10 @@ public class BoidsView implements ChangeListener {
 	private JSlider cohesionSlider, separationSlider, alignmentSlider;
 	private BoidsModel model;
 	private int width, height;
+
+	private JButton startStopButton;
+	private boolean isRunning = false;
+	private Runnable toggleSimulation;
 	
 	public BoidsView(BoidsModel model, int width, int height) {
 		this.model = model;
@@ -43,12 +47,31 @@ public class BoidsView implements ChangeListener {
         slidersPanel.add(alignmentSlider);
         slidersPanel.add(new JLabel("Cohesion"));
         slidersPanel.add(cohesionSlider);
-		        
+
+		// Start/Stop Button
+		startStopButton = new JButton("Start");
+		slidersPanel.add(startStopButton);
+		startStopButton.addActionListener(e -> {
+			isRunning = !isRunning;
+			startStopButton.setText(isRunning ? "Stop" : "Start");
+
+			if (toggleSimulation != null) {
+				toggleSimulation.run();
+			}
+		});
+
 		cp.add(BorderLayout.SOUTH, slidersPanel);
 
-		frame.setContentPane(cp);	
-		
+		frame.setContentPane(cp);
         frame.setVisible(true);
+	}
+
+	public void setToggleSimulation(Runnable toggleSimulation) {
+		this.toggleSimulation = toggleSimulation;
+	}
+
+	public boolean isRunning(){
+		return this.isRunning;
 	}
 
 	private JSlider makeSlider() {
