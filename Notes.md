@@ -1,13 +1,10 @@
 ### Version 1
 
-Ho tolto final dalla lista in BoidModel perché il numero di boid non lo so a priori. 
+Provare a fare un thread per ogni boid, ognuno calcola il proprio nuovo stato in parallelo. Quando tutti hanno finito di leggere e calcolare (barrier), posso aggiornarsi tutti in parllelo, perché ognuno aggiorna sé stesso e non ci sono conflitti.
 
+Provando senza rendere Boid Runnable, è più lento di prima, forse perché crei nuovi thread per ogni boid ad ogni iterazione. La lista di Boid può diventare una lista di thread.
 
-Should I make a thread for each boid? When a boid need to update itself in the shared array, it requires a lock. We can have concurrent readers and concurrent writers, but not a mix of them, because writers always write different boids.
-
-Therefore, I can use a barrier, wait for all threads to compute their new state (everybody reads) and then everybody writes its new state. But is this the correct way to update the simulation, or we are supposed to make the new state available to other boids asap?
-
-In Boids class, after getNearbyBoids, other operations can be made parallel:
+In Boids class, operations can be made parallel:
 
 ```
 List<Boid> nearbyBoids = getNearbyBoids(model);
@@ -29,3 +26,4 @@ g.fillOval(px,py, 5, 5); // is this the bottleneck?
 ```
 
 The start/stop button has to stop all threads, but keeping a thread array it's straightforward.
+

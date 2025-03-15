@@ -1,6 +1,7 @@
 package pcd.ass01.v1;
 
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 
 public class BoidsSimulator {
 
@@ -46,8 +47,23 @@ public class BoidsSimulator {
         while (running) {
             var t0 = System.currentTimeMillis();
             var boids = model.getBoids();
+            CountDownLatch latch = new CountDownLatch(boids.size());
+
+            // parallel compute update
             for (Boid boid : boids) {
-                boid.update(model);
+                new Thread(() -> {
+                    boid.computeUpdate(model);
+                    latch.countDown();
+
+                    // wait for all threads
+                    try {
+                        latch.await();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+
+                    boid.update(model);
+                }).start();
             }
 
             if (view.isPresent()) {

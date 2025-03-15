@@ -8,6 +8,11 @@ public class Boid {
     private P2d pos;
     private V2d vel;
 
+    private V2d separation;
+    private V2d alignment;
+    private V2d cohesion;
+    private List<Boid> nearbyBoids;
+
     public Boid(P2d pos, V2d vel) {
         this.pos = pos;
         this.vel = vel;
@@ -21,14 +26,15 @@ public class Boid {
         return vel;
     }
 
+    public void computeUpdate(BoidsModel model){
+        nearbyBoids = getNearbyBoids(model);
+        separation = calculateSeparation(nearbyBoids, model);
+        alignment = calculateAlignment(nearbyBoids, model);
+        cohesion = calculateCohesion(nearbyBoids, model);
+    }
+
     public void update(BoidsModel model) {
-
         /* change velocity vector according to separation, alignment, cohesion */
-        List<Boid> nearbyBoids = getNearbyBoids(model);
-        V2d separation = calculateSeparation(nearbyBoids, model);
-        V2d alignment = calculateAlignment(nearbyBoids, model);
-        V2d cohesion = calculateCohesion(nearbyBoids, model);
-
         vel = vel.sum(alignment.mul(model.getAlignmentWeight()))
                 .sum(separation.mul(model.getSeparationWeight()))
                 .sum(cohesion.mul(model.getCohesionWeight()));
