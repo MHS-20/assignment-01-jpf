@@ -16,16 +16,11 @@ public class Boid {
     private V2d cohesion;
 
     private List<Boid> nearbyBoids;
-    private ReentrantReadWriteLock rwLock;
-    private ReentrantReadWriteLock.ReadLock readLock;
-    private ReentrantReadWriteLock.WriteLock writeLock;
 
     public Boid(P2d pos, V2d vel) {
         this.pos = pos;
         this.vel = vel;
-        rwLock = new ReentrantReadWriteLock();
-        readLock = rwLock.readLock();
-        writeLock = rwLock.writeLock();
+
     }
 
     public P2d getPos() {
@@ -38,17 +33,14 @@ public class Boid {
 
 
     public void computeUpdate(BoidsModel model) {
-        readLock.lock();
         nearbyBoids = getNearbyBoids(model);
-        separation = calculateSeparation(nearbyBoids, model);
-        alignment = calculateAlignment(nearbyBoids, model);
-        cohesion = calculateCohesion(nearbyBoids, model);
-        readLock.unlock();
+       separation = calculateSeparation(nearbyBoids, model);
+       alignment = calculateAlignment(nearbyBoids, model);
+       cohesion = calculateCohesion(nearbyBoids, model);
     }
 
     public void update(BoidsModel model) {
         /* change velocity vector according to separation, alignment, cohesion */
-        writeLock.lock();
         vel = vel.sum(alignment.mul(model.getAlignmentWeight()))
                 .sum(separation.mul(model.getSeparationWeight()))
                 .sum(cohesion.mul(model.getCohesionWeight()));
@@ -68,7 +60,6 @@ public class Boid {
         if (pos.x() >= model.getMaxX()) pos = pos.sum(new V2d(-model.getWidth(), 0));
         if (pos.y() < model.getMinY()) pos = pos.sum(new V2d(0, model.getHeight()));
         if (pos.y() >= model.getMaxY()) pos = pos.sum(new V2d(0, -model.getHeight()));
-        writeLock.unlock();
     }
 
     private List<Boid> getNearbyBoids(BoidsModel model) {

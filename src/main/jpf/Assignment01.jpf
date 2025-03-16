@@ -1,9 +1,12 @@
-target = pcd.ass01.v0.BoidsSimulation
+target = pcd.ass01.v1.BoidsSimulation
+target.args = headless
 
 classpath=build/classes/java/main
 
 sourcepath=src/main/java
 
-listener=gov.nasa.jpf.listener.PreciseRaceDetector
+listener=gov.nasa.jpf.listener.PreciseRaceDetector;
+gov.nasa.jpf.listener.DeadlockAnalyzer;
+gov.nasa.jpf.listener.ObjectTracker;
 
-report.console.property_violation=error,trace
+report.console.property_violation=error

@@ -2,20 +2,22 @@ package pcd.ass01.v1;
 
 import java.util.List;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class BoidWorker extends Thread {
 
-    private int start, finish;
     private List<Boid> allBoids;
     private List<Boid> partitionBoids;
-    private CyclicBarrier barrier;
     private BoidsModel model;
+    private ReentrantReadWriteLock.ReadLock readLock;
+    private ReentrantReadWriteLock.WriteLock writeLock;
 
     public BoidWorker() {
     }
 
-    public BoidWorker(CyclicBarrier barrier, List<Boid> allBoids, List<Boid> partitionBoids, BoidsModel model) {
-        this.barrier = barrier;
+    public BoidWorker(ReentrantReadWriteLock rwlock, List<Boid> allBoids, List<Boid> partitionBoids, BoidsModel model) {
+        this.readLock =  rwlock.readLock();
+        this.writeLock = rwlock.writeLock();
         this.allBoids = allBoids;
         this.partitionBoids = partitionBoids;
         this.model = model;
@@ -29,15 +31,16 @@ public class BoidWorker extends Thread {
         this.partitionBoids = boids;
     }
 
-    public void setBarrier(CyclicBarrier barrier) {
-        this.barrier = barrier;
-    }
-
     @Override
     public void run() {
         for (Boid b : partitionBoids) {
+            readLock.lock();
             b.computeUpdate(model);
+            readLock.unlock();
+
+            writeLock.lock();
             b.update(model);
+            writeLock.unlock();
         }
     }
 }

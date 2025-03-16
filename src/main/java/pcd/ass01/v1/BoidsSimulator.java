@@ -1,8 +1,10 @@
 package pcd.ass01.v1;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class BoidsSimulator {
 
@@ -45,21 +47,26 @@ public class BoidsSimulator {
     }
 
     public void runSimulation() {
-        List<Boid> partition;
         var boids = model.getBoids();
-        CyclicBarrier barrier = new CyclicBarrier(boids.size());
-
         int numCores = Runtime.getRuntime().availableProcessors();
+
+        List<Boid>[] partitions = new List[numCores];
         int step = boids.size() / numCores;
+
         BoidWorker[] workers = new BoidWorker[numCores];
+        ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock(true);
+
+        for (int i = 0; i < numCores; i++) {
+            partitions[i] = boids.subList(i * step, (i + 1) * step);
+        }
 
         while (running) {
             var t0 = System.currentTimeMillis();
             boids = model.getBoids();
 
             for (int i = 0; i < numCores; i++) {
-                partition = boids.subList(i * step, (i + 1) * step);
-                workers[i] = new BoidWorker(barrier, boids, partition, model);
+                //partition = boids.subList(i * step, (i + 1) * step);
+                workers[i] = new BoidWorker(rwLock, boids, partitions[i], model);
                 workers[i].start();
             }
 

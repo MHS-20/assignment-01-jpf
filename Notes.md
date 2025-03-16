@@ -1,14 +1,12 @@
 ### Version 1
 
+Usare N thread per spezzare la lista di Boid, ed ognuno si occupa di un sottogruppo, però devi mettere un mutex su ogni boid per aggiornarlo, perché potrebbe essere che quel boid venga letto da un altro thread.
+
 - Synchronized nel model serve?
-- Più reader possono accedere ad un boid, ma il writer deve essere solo, non possono aspettarsi tutti perché sono divisi a gruppi, dovresti fare cache delle modifiche o metterci il mutex.
+- Più reader possono accedere ad un boid, ma il writer deve essere solo.
 - Dividere tra Reader & Writer class? Altrimenti come li sincronizzi bene?
 - Parallelizzare il rendering di ogni boid nella GUI?
-- Per ora il tasto start/stop funziona perché i thread terminano dopo un giro, se invece li fai long-lived devi fermarli uno per volta e sincronizzarli diversamente (aggiungi una barrier finale).
-
-Provare a fare un thread per ogni boid, ognuno calcola il proprio nuovo stato in parallelo. Quando tutti hanno finito di leggere e calcolare (barrier), posso aggiornarsi tutti in parllelo, perché ognuno aggiorna sé stesso e non ci sono conflitti.
-
-Con un thread per ogni boid è più lento di prima, ci sono troppi thread attivi. Si dovrebbero creare meno thread ed ognuno lavora su un gruppo di boid. Usare N thread per spezzare la lista di Boid, ed ognuno si occupa di un sottogruppo, però devi mettere un mutex su ogni boid per aggiornarlo.
+- Per ora il tasto start/stop funziona perché i thread terminano dopo un giro, se invece li fai long-lived devi fermarli uno per volta e sincronizzarli in modo che si aspettino alla fine di ogni iterazione (barrier)
 
 In Boids class, operations can be made parallel:
 
@@ -30,5 +28,3 @@ int py = (int)(h/2 - y*xScale);
 g.fillOval(px,py, 5, 5); // is this the bottleneck?
 }
 ```
-
-The start/stop button has to stop all threads, but keeping a thread array it's straightforward.
