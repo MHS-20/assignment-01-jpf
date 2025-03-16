@@ -1,7 +1,7 @@
 ### Version 1
 
 - Synchronized nel model serve?
-- Più reader possono accedere ad un boid, ma il writer deve essere solo.
+- Più reader possono accedere ad un boid, ma il writer deve essere solo, non possono aspettarsi tutti perché sono divisi a gruppi, dovresti fare cache delle modifiche o metterci il mutex.
 - Dividere tra Reader & Writer class? Altrimenti come li sincronizzi bene?
 - Parallelizzare il rendering di ogni boid nella GUI?
 - Per ora il tasto start/stop funziona perché i thread terminano dopo un giro, se invece li fai long-lived devi fermarli uno per volta e sincronizzarli diversamente (aggiungi una barrier finale).
