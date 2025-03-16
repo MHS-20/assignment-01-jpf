@@ -6,7 +6,7 @@ classpath=build/classes/java/main
 sourcepath=src/main/java
 
 listener=gov.nasa.jpf.listener.PreciseRaceDetector;
-gov.nasa.jpf.listener.DeadlockAnalyzer;
-gov.nasa.jpf.listener.ObjectTracker;
+listener=gov.nasa.jpf.listener.DeadlockAnalyzer;
+listener=gov.nasa.jpf.listener.OverlappingMethodAnalyzer;
 
 report.console.property_violation=error
