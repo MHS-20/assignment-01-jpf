@@ -6,28 +6,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BoidsModel {
-    
+
     private final List<Boid> boids;
     private boolean isRunning;
     private double separationWeight;
 
-    private double alignmentWeight; 
-    private double cohesionWeight; 
+    private double alignmentWeight;
+    private double cohesionWeight;
     private final double width;
     private final double height;
     private final double maxSpeed;
     private final double perceptionRadius;
     private final double avoidRadius;
 
-    public BoidsModel(int nboids,  
-    						double initialSeparationWeight, 
-    						double initialAlignmentWeight, 
-    						double initialCohesionWeight,
-    						double width, 
-    						double height,
-    						double maxSpeed,
-    						double perceptionRadius,
-    						double avoidRadius){
+    public BoidsModel(int nboids,
+                      double initialSeparationWeight,
+                      double initialAlignmentWeight,
+                      double initialCohesionWeight,
+                      double width,
+                      double height,
+                      double maxSpeed,
+                      double perceptionRadius,
+                      double avoidRadius) {
         separationWeight = initialSeparationWeight;
         alignmentWeight = initialAlignmentWeight;
         cohesionWeight = initialCohesionWeight;
@@ -36,101 +36,116 @@ public class BoidsModel {
         this.maxSpeed = maxSpeed;
         this.perceptionRadius = perceptionRadius;
         this.avoidRadius = avoidRadius;
-        this.isRunning = false;
-    	boids = new ArrayList<>();
+        this.isRunning = true;
+        boids = new ArrayList<>();
+        // generateFixedBoids(nboids);
         generateBoids(nboids);
     }
 
     private void generateBoids(int nboids) {
         for (int i = 0; i < nboids; i++) {
-            P2d pos = new P2d(-width/2 + Math.random() * width, -height/2 + Math.random() * height);
-            V2d vel = new V2d(Math.random() * maxSpeed/2 - maxSpeed/4, Math.random() * maxSpeed/2 - maxSpeed/4);
+            P2d pos = new P2d(-width / 2 + Math.random() * width, -height / 2 + Math.random() * height);
+            V2d vel = new V2d(Math.random() * maxSpeed / 2 - maxSpeed / 4, Math.random() * maxSpeed / 2 - maxSpeed / 4);
+            boids.add(new Boid(pos, vel));
+        }
+    }
+
+    private void generateFixedBoids(int nboids) {
+        for (int i = 0; i < nboids; i++) {
+            P2d pos = new P2d(-width / 2 + 4000 * width, -height / 2 + 6 * height);
+            V2d vel = new V2d(2 * maxSpeed / 2 - maxSpeed / 4, 9000 * maxSpeed / 2 - maxSpeed / 4);
             boids.add(new Boid(pos, vel));
         }
     }
 
     public synchronized void setNboids(int nboids) {
-
         int currentNboids = this.boids.size();
-        System.out.println(currentNboids);
+        System.out.println("Setting boids: " + currentNboids);
+
         if (nboids > currentNboids)
-            generateBoids(nboids - currentNboids);
+            generateFixedBoids(nboids - currentNboids);
         else {
-            System.out.println("removing " + (currentNboids -  nboids) + " items");
+            System.out.println("removing " + (currentNboids - nboids) + " items");
             if ((currentNboids - nboids) > 0) {
                 boids.subList(0, (currentNboids - nboids)).clear();
             }
         }
 
     }
-    public synchronized int getNboids() {return boids.size();}
 
-
-    public List<Boid> getBoids(){
-    	return boids;
+    public int getNboids() {
+        return boids.size();
     }
-    
+
+    public List<Boid> getBoids() {
+        return boids;
+    }
+
     public double getMinX() {
-    	return -width/2;
+        return -width / 2;
     }
 
     public double getMaxX() {
-    	return width/2;
+        return width / 2;
     }
 
     public double getMinY() {
-    	return -height/2;
+        return -height / 2;
     }
 
     public double getMaxY() {
-    	return height/2;
+        return height / 2;
     }
-    
+
     public double getWidth() {
-    	return width;
+        return width;
     }
- 
+
     public double getHeight() {
-    	return height;
+        return height;
     }
 
     public synchronized void setSeparationWeight(double value) {
-    	this.separationWeight = value;
+        this.separationWeight = value;
     }
 
     public synchronized void setAlignmentWeight(double value) {
-    	this.alignmentWeight = value;
+        this.alignmentWeight = value;
     }
 
-    public synchronized void setIsRunning(boolean isRunning) {this.isRunning = isRunning;}
+    public synchronized void setIsRunning(boolean isRunning) {
+        this.isRunning = isRunning;
+    }
 
-    public synchronized boolean getIsRunning() {return this.isRunning;}
+    public synchronized boolean getIsRunning() {
+        return this.isRunning;
+    }
 
     public synchronized void setCohesionWeight(double value) {
-    	this.cohesionWeight = value;
+        this.cohesionWeight = value;
     }
 
     public synchronized double getSeparationWeight() {
-    	return separationWeight;
+        return separationWeight;
     }
 
     public synchronized double getCohesionWeight() {
-    	return cohesionWeight;
+        return cohesionWeight;
     }
 
     public synchronized double getAlignmentWeight() {
-    	return alignmentWeight;
+        return alignmentWeight;
     }
-    
+
     public double getMaxSpeed() {
-    	return maxSpeed;
+        return maxSpeed;
     }
 
     public double getAvoidRadius() {
-    	return avoidRadius;
+        return avoidRadius;
     }
 
     public double getPerceptionRadius() {
-    	return perceptionRadius;
+        return perceptionRadius;
     }
 }
