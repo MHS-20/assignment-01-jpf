@@ -42,13 +42,19 @@ public class BoidsSimulator {
 
         for (List<Boid> partition : partitions) {
             var worker = new BoidWorker(partition, model, velocityBarrier, positionBarrier);
-            worker.start();
+            //worker.start();
             workers.add(worker);
         }
 
         while (true) {
             if (model.getIsRunning()) {
                 var t0 = System.currentTimeMillis();
+
+                for (BoidWorker w : workers){
+                    if(!w.isAlive()){
+                        w.start();
+                    }
+                }
 
                 try {
                     System.out.println(Thread.currentThread().getName() + ": waiting on first barrier");
@@ -76,7 +82,6 @@ public class BoidsSimulator {
                     } else {
                         framerate = (int) (1000 / dtElapsed);
                     }
-
 
 //                    try {
 //                        System.out.println(Thread.currentThread().getName() + ": waiting on second barrier");

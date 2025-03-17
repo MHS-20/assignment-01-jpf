@@ -1,4 +1,5 @@
 target = pcd.ass01.v1fix.BoidsSimulation
+target.args=headless
 
 classpath=build/classes/java/main
 

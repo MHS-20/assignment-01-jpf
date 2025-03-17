@@ -2,9 +2,13 @@ package pcd.ass01.v1fix;
 
 import pcd.ass01.v1fix.BoidsModel;
 
+import javax.swing.*;
+
 public class BoidsSimulation {
 
 	final static int N_BOIDS = 1500;
+	static int n_boids = N_BOIDS;
+
 	final static double SEPARATION_WEIGHT = 1.0;
     final static double ALIGNMENT_WEIGHT = 1.0;
     final static double COHESION_WEIGHT = 1.0;
@@ -18,17 +22,42 @@ public class BoidsSimulation {
 	final static int SCREEN_WIDTH = 800;
 	final static int SCREEN_HEIGHT = 800;
 
-    public static void main(String[] args) {      
-    	var model = new BoidsModel(
-    					N_BOIDS, 
+    public static void main(String[] args) {
+		// arg set by jpf
+		boolean headless = args.length > 0 && args[0].equals("headless");
+		if(!headless)
+			promptForBoidCount();
+
+		var model = new BoidsModel(
+						n_boids,
     					SEPARATION_WEIGHT, ALIGNMENT_WEIGHT, COHESION_WEIGHT, 
     					ENVIRONMENT_WIDTH, ENVIRONMENT_HEIGHT,
     					MAX_SPEED,
     					PERCEPTION_RADIUS,
     					AVOID_RADIUS); 
     	var sim = new BoidsSimulator(model);
-    	var view = new BoidsView(model, SCREEN_WIDTH, SCREEN_HEIGHT);
-    	sim.attachView(view);
+
+		if(!headless){
+			var view = new BoidsView(model, SCREEN_WIDTH, SCREEN_HEIGHT);
+			sim.attachView(view);
+		}
     	sim.runSimulation();
     }
+
+	public static void promptForBoidCount() {
+		String input = JOptionPane.showInputDialog(null, "Enter number of boids:", "Boid Count", JOptionPane.QUESTION_MESSAGE);
+		if (input != null && !input.isEmpty()) {
+			try {
+				int numBoids = Integer.parseInt(input);
+
+				if (numBoids > 0) {
+					n_boids = numBoids;
+				} else {
+					n_boids = N_BOIDS;
+				}
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(null, "Invalid input. Please enter a valid number.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+			}
+		}
+	}
 }

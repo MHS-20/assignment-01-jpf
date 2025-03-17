@@ -31,12 +31,14 @@ public class BoidsModel {
         separationWeight = initialSeparationWeight;
         alignmentWeight = initialAlignmentWeight;
         cohesionWeight = initialCohesionWeight;
+
         this.width = width;
         this.height = height;
         this.maxSpeed = maxSpeed;
         this.perceptionRadius = perceptionRadius;
         this.avoidRadius = avoidRadius;
-        this.isRunning = true;
+
+        this.isRunning = false;
         boids = new ArrayList<>();
         // generateFixedBoids(nboids);
         generateBoids(nboids);
@@ -50,6 +52,7 @@ public class BoidsModel {
         }
     }
 
+    // jpf
     private void generateFixedBoids(int nboids) {
         for (int i = 0; i < nboids; i++) {
             P2d pos = new P2d(-width / 2 + 4000 * width, -height / 2 + 6 * height);
@@ -70,7 +73,6 @@ public class BoidsModel {
                 boids.subList(0, (currentNboids - nboids)).clear();
             }
         }
-
     }
 
     public int getNboids() {
