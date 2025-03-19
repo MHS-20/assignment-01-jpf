@@ -20,6 +20,7 @@ public class BoidsModel {
     private final double avoidRadius;
 
     public BoidsModel(int nboids,
+                      boolean headless,
                       double initialSeparationWeight,
                       double initialAlignmentWeight,
                       double initialCohesionWeight,
@@ -38,10 +39,13 @@ public class BoidsModel {
         this.perceptionRadius = perceptionRadius;
         this.avoidRadius = avoidRadius;
 
-        this.isRunning = false;
+        this.isRunning = headless;
         boids = new ArrayList<>();
-        // generateFixedBoids(nboids);
-        generateBoids(nboids);
+
+        if(headless)
+            generateFixedBoids(nboids); // avoid random for jpf
+        else
+            generateBoids(nboids);
     }
 
     private void generateBoids(int nboids) {

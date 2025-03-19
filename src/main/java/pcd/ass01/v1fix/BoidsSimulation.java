@@ -29,7 +29,7 @@ public class BoidsSimulation {
 			promptForBoidCount();
 
 		var model = new BoidsModel(
-						n_boids,
+						n_boids, headless,
     					SEPARATION_WEIGHT, ALIGNMENT_WEIGHT, COHESION_WEIGHT, 
     					ENVIRONMENT_WIDTH, ENVIRONMENT_HEIGHT,
     					MAX_SPEED,
