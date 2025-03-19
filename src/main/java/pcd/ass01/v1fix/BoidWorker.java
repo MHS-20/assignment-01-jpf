@@ -7,7 +7,7 @@ import java.util.concurrent.CyclicBarrier;
 public class BoidWorker extends Thread {
     private List<Boid> boids;
     private BoidsModel model;
-    private CyclicBarrier velocityBarrier, positionBarrier;
+    private CyclicBarrier velocityBarrier, positionBarrier, collectDataBarrier, writeDataBarrier;
 
     public BoidWorker(List<Boid> boids, BoidsModel model) {
         super();
@@ -15,19 +15,32 @@ public class BoidWorker extends Thread {
         this.model = model;
     }
 
-    public BoidWorker(List<Boid> boids, BoidsModel model, CyclicBarrier velocityBarrier,CyclicBarrier positionBarrier ) {
+    public BoidWorker(List<Boid> boids, BoidsModel model, CyclicBarrier velocityBarrier,CyclicBarrier positionBarrier, CyclicBarrier collectDataBarrier, CyclicBarrier writeDataBarrier) {
         super();
         this.boids = boids;
         this.model = model;
         this.velocityBarrier = velocityBarrier;
         this.positionBarrier = positionBarrier;
+        this.collectDataBarrier = collectDataBarrier;
+        this.writeDataBarrier = writeDataBarrier;
     }
 
     public void run() {
         try {
             while (true) {
                 for (Boid boid : boids) {
+                    //readLock.lock();
+                    boid.getNearbyData(model);
+                    //readLock.unlock();
+
+                    //collectDataBarrier.await();
+
+                    //writeLock.lock();
                     boid.updateVelocity(model);
+                    //writeLock.unlock();
+
+                    //writeDataBarrier.await();
+
                 }
 
                 System.out.println(Thread.currentThread().getName() + ": waiting on first barrier");
