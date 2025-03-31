@@ -1,24 +1,21 @@
-package pcd.ass01.v1fix;
-
-import pcd.ass01.v1fix.Boid;
-import pcd.ass01.v1fix.BoidsModel;
+package pcd.ass01.v1;
 
 import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
-public class BoidVelocityWorker extends Thread {
+public class BoidPositionWorker extends Thread{
     private List<Boid> boids;
     private BoidsModel model;
     private CyclicBarrier barrier;
 
-    public BoidVelocityWorker(List<Boid> boids, BoidsModel model) {
+    public BoidPositionWorker(List<Boid> boids, BoidsModel model) {
         super();
         this.boids = boids;
         this.model = model;
     }
 
-    public BoidVelocityWorker(List<Boid> boids, BoidsModel model, CyclicBarrier barrier) {
+    public BoidPositionWorker(List<Boid> boids, BoidsModel model, CyclicBarrier barrier) {
         super();
         this.boids = boids;
         this.model = model;
@@ -29,7 +26,7 @@ public class BoidVelocityWorker extends Thread {
         try {
             while (true) {
                 for (Boid boid : boids) {
-                    boid.updateVelocity(model);
+                    boid.updatePos(model);
                 }
                 barrier.await();
             }
@@ -39,4 +36,6 @@ public class BoidVelocityWorker extends Thread {
             throw new RuntimeException(e);
         }
     }
+
+
 }

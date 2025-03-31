@@ -6,7 +6,7 @@ package pcd.ass01.v1;
  * objects are completely state-less
  *
  */
-public class P2d {
+public final class P2d {
 
     public double x;
     public double y;

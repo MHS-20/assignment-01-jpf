@@ -8,6 +8,10 @@ Velocity/Position: necessarie due barriere su cui aspettano tutti.
 
 RWLock per accedere ai campi del boid funziona meglio di usare due barriere in più. Rendere ogni Boid un monitor lo rallenta troppo perché serializza anche le letture. Ogni boid ha il suo RWLock, così le letture sono parallele.
 
+RWlock però funziona solo in due metodi, se qualcuno chiama i getter altrove fuori dal boid non va bene come soluzione.
+
+Poi ha detto che la GUI ha un suo thread in cui va a leggere i boid, nel mentre che i thread li stanno modificando. 
+
 Listeners JPF:
 
 [https://github.com/javapathfinder/jpf-core/tree/master/src/main/gov/nasa/jpf/listener](https://github.com/javapathfinder/jpf-core/tree/master/src/main/gov/nasa/jpf/listener)

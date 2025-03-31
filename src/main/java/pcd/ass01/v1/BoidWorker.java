@@ -1,46 +1,60 @@
 package pcd.ass01.v1;
 
 import java.util.List;
+import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class BoidWorker extends Thread {
-
-    private List<Boid> allBoids;
-    private List<Boid> partitionBoids;
+    private List<Boid> boids;
     private BoidsModel model;
-    private ReentrantReadWriteLock.ReadLock readLock;
-    private ReentrantReadWriteLock.WriteLock writeLock;
+    private CyclicBarrier velocityBarrier, positionBarrier, collectDataBarrier, writeDataBarrier;
 
-    public BoidWorker() {
-    }
-
-    public BoidWorker(ReentrantReadWriteLock rwlock, List<Boid> allBoids, List<Boid> partitionBoids, BoidsModel model) {
-        this.readLock =  rwlock.readLock();
-        this.writeLock = rwlock.writeLock();
-        this.allBoids = allBoids;
-        this.partitionBoids = partitionBoids;
+    public BoidWorker(List<Boid> boids, BoidsModel model) {
+        super();
+        this.boids = boids;
         this.model = model;
     }
 
-    public void setAllBoids(List<Boid> boids) {
-        this.allBoids = boids;
+    public BoidWorker(List<Boid> boids, BoidsModel model, CyclicBarrier velocityBarrier,CyclicBarrier positionBarrier) {
+        super();
+        this.boids = boids;
+        this.model = model;
+        this.velocityBarrier = velocityBarrier;
+        this.positionBarrier = positionBarrier;
     }
 
-    public void setPartitionBoids(List<Boid> boids) {
-        this.partitionBoids = boids;
-    }
-
-    @Override
     public void run() {
-        for (Boid b : partitionBoids) {
-            readLock.lock();
-            b.computeUpdate(model);
-            readLock.unlock();
+        try {
+            while (true) {
+                for (Boid boid : boids) {
+                    //readLock.lock();
+                    boid.getNearbyData(model);
+                    //readLock.unlock();
 
-            writeLock.lock();
-            b.update(model);
-            writeLock.unlock();
+                    //collectDataBarrier.await();
+
+                    //writeLock.lock();
+                    boid.updateVelocity(model);
+                    //writeLock.unlock();
+
+                    //writeDataBarrier.await();
+
+                }
+
+                //System.out.println(Thread.currentThread().getName() + ": waiting on first barrier");
+                velocityBarrier.await();
+
+                for (Boid boid : boids) {
+                    boid.updatePos(model);
+                }
+
+                //System.out.println(Thread.currentThread().getName() + ": waiting on second barrier");
+                positionBarrier.await();
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (BrokenBarrierException e) {
+            throw new RuntimeException(e);
         }
     }
 }

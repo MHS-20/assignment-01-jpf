@@ -2,25 +2,27 @@ package pcd.ass01.v1;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Boid {
 
     private P2d pos;
     private V2d vel;
-
     private V2d separation;
     private V2d alignment;
     private V2d cohesion;
 
-    private List<Boid> nearbyBoids;
+    private ReentrantReadWriteLock rwlock;
+    private ReentrantReadWriteLock.ReadLock readLock;
+    private ReentrantReadWriteLock.WriteLock writeLock;
 
     public Boid(P2d pos, V2d vel) {
         this.pos = pos;
         this.vel = vel;
 
+        this.rwlock = new ReentrantReadWriteLock();
+        this.readLock = rwlock.readLock();
+        this.writeLock = rwlock.writeLock();
     }
 
     public P2d getPos() {
@@ -31,16 +33,13 @@ public class Boid {
         return vel;
     }
 
-
-    public void computeUpdate(BoidsModel model) {
-        nearbyBoids = getNearbyBoids(model);
-       separation = calculateSeparation(nearbyBoids, model);
-       alignment = calculateAlignment(nearbyBoids, model);
-       cohesion = calculateCohesion(nearbyBoids, model);
-    }
-
     public void update(BoidsModel model) {
         /* change velocity vector according to separation, alignment, cohesion */
+        List<Boid> nearbyBoids = getNearbyBoids(model);
+        V2d separation = calculateSeparation(nearbyBoids, model);
+        V2d alignment = calculateAlignment(nearbyBoids, model);
+        V2d cohesion = calculateCohesion(nearbyBoids, model);
+
         vel = vel.sum(alignment.mul(model.getAlignmentWeight()))
                 .sum(separation.mul(model.getSeparationWeight()))
                 .sum(cohesion.mul(model.getCohesionWeight()));
@@ -52,6 +51,42 @@ public class Boid {
             vel = vel.getNormalized().mul(model.getMaxSpeed());
         }
 
+        /* Update position */
+        pos = pos.sum(vel);
+
+        /* environment wrap-around */
+        if (pos.x() < model.getMinX()) pos = pos.sum(new V2d(model.getWidth(), 0));
+        if (pos.x() >= model.getMaxX()) pos = pos.sum(new V2d(-model.getWidth(), 0));
+        if (pos.y() < model.getMinY()) pos = pos.sum(new V2d(0, model.getHeight()));
+        if (pos.y() >= model.getMaxY()) pos = pos.sum(new V2d(0, -model.getHeight()));
+    }
+
+    public void getNearbyData(BoidsModel model) {
+        /* change velocity vector according to separation, alignment, cohesion */
+        readLock.lock();
+        List<Boid> nearbyBoids = getNearbyBoids(model);
+        this.separation = calculateSeparation(nearbyBoids, model);
+        this.alignment = calculateAlignment(nearbyBoids, model);
+        this.cohesion = calculateCohesion(nearbyBoids, model);
+        readLock.unlock();
+    }
+
+    public void updateVelocity(BoidsModel model) {
+        writeLock.lock();
+        vel = vel.sum(alignment.mul(model.getAlignmentWeight()))
+                .sum(separation.mul(model.getSeparationWeight()))
+                .sum(cohesion.mul(model.getCohesionWeight()));
+
+        /* Limit speed to MAX_SPEED */
+        double speed = vel.abs();
+        if (speed > model.getMaxSpeed()) {
+            vel = vel.getNormalized().mul(model.getMaxSpeed());
+        }
+
+        writeLock.unlock();
+    }
+
+    public void updatePos(BoidsModel model) {
         /* Update position */
         pos = pos.sum(vel);
 
