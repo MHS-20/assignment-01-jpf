@@ -15,6 +15,7 @@ public class BoidsSimulator {
     private final int CORES = Runtime.getRuntime().availableProcessors();
     private final int N_WORKERS = CORES + 1;
     private long t0;
+
     private Monitor managerMonitor = new Monitor();
     private Barrier computeVelocityBarrier;
     private Barrier updateVelocityBarrier;
@@ -37,9 +38,7 @@ public class BoidsSimulator {
 
         int i = 0;
         for (Boid boid : model.getBoids()) {
-            if (i == partitions.size()) {
-                i = 0;
-            }
+            i = (i == partitions.size() ? 0 : i);
             partitions.get(i).add(boid);
             i++;
         }
@@ -70,7 +69,7 @@ public class BoidsSimulator {
     }
 
     public void attachView(BoidsView view) {
-    	this.view = Optional.of(view);
+        this.view = Optional.of(view);
     }
 
     public void runSimulation() {
@@ -84,6 +83,7 @@ public class BoidsSimulator {
                         updateFrameRate(t0);
                         upddatePositionBarrier.reset();
                     }
+
                 } else {
                     managerMonitor.stopWork();
                 }

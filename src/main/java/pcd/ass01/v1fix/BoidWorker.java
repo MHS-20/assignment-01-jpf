@@ -30,23 +30,23 @@ public class BoidWorker extends Thread {
     public void run() {
         while (true) {
             monitor.waitUntilWorkStart();
-            calculateVelocityAndWaitBarrier();
-            updateVelocityAndWaitBarrier();
-            updatePositionAndWaitBarrier();
+            computeVelocity();
+            updateVelocity();
+            updatePosition();
         }
     }
 
-    private void calculateVelocityAndWaitBarrier() {
+    private void computeVelocity() {
         boidsPartition.forEach(boid -> boid.calculateVelocity(model));
         computeVelocityBarrier.await();
     }
 
-    private void updateVelocityAndWaitBarrier() {
+    private void updateVelocity() {
         boidsPartition.forEach(boid -> boid.updateVelocity(model));
         updateVelocityBarrier.await();
     }
 
-    private void updatePositionAndWaitBarrier() {
+    private void updatePosition() {
         boidsPartition.forEach(boid -> boid.updatePosition(model));
         upddatePositionBarrier.await();
     }
@@ -56,5 +56,4 @@ public class BoidWorker extends Thread {
             System.out.println("[" + this + "] " + getName() + " -> " + msg);
         }
     }
-
 }
