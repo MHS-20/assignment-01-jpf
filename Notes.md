@@ -1,3 +1,5 @@
+Volatile nei campi del Boid? In tutte le versioni?
+
 ### Version 1
 Usare N thread per spezzare la lista di Boid, ed ognuno si occupa di un sottogruppo.
 Velocity/Position: necessarie due barriere su cui aspettano tutti prima di passare alla fase successiva.
