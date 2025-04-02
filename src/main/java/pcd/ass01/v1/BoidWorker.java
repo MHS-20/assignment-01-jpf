@@ -15,7 +15,7 @@ public class BoidWorker extends Thread {
         this.model = model;
     }
 
-    public BoidWorker(List<Boid> boids, BoidsModel model, CyclicBarrier velocityBarrier,CyclicBarrier positionBarrier) {
+    public BoidWorker(List<Boid> boids, BoidsModel model, CyclicBarrier velocityBarrier, CyclicBarrier positionBarrier) {
         super();
         this.boids = boids;
         this.model = model;
@@ -23,22 +23,19 @@ public class BoidWorker extends Thread {
         this.positionBarrier = positionBarrier;
     }
 
+    public void setModel(BoidsModel model){
+        this.model = model;
+    }
+
     public void run() {
         try {
             while (true) {
                 for (Boid boid : boids) {
-                    //readLock.lock();
                     boid.getNearbyData(model);
-                    //readLock.unlock();
-
                     //collectDataBarrier.await();
 
-                    //writeLock.lock();
                     boid.updateVelocity(model);
-                    //writeLock.unlock();
-
                     //writeDataBarrier.await();
-
                 }
 
                 //System.out.println(Thread.currentThread().getName() + ": waiting on first barrier");

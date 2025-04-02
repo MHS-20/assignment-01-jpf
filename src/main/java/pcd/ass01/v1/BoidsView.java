@@ -7,14 +7,14 @@ import java.awt.*;
 import java.util.Hashtable;
 
 public class BoidsView implements ChangeListener {
-
     private JFrame frame;
     private BoidsPanel boidsPanel;
     private JSlider cohesionSlider, separationSlider, alignmentSlider;
-    private JButton startStopButton;
+    private JButton startStopButton, suspendResumeButton;
     private JTextField boidsNumberInput;
     private BoidsModel model;
     private int width, height;
+    private boolean initializeWorkers;
 
     public BoidsView(BoidsModel model, int width, int height) {
         this.model = model;
@@ -38,24 +38,39 @@ public class BoidsView implements ChangeListener {
         cohesionSlider = makeSlider();
         separationSlider = makeSlider();
         alignmentSlider = makeSlider();
+
         startStopButton = new JButton();
-        startStopButton.setText("Start");
-//        boidsNumberInput = new JTextField(10);
-//        boidsNumberInput.setEnabled(true);
-//        boidsNumberInput.addActionListener(e -> {
-//            String input = boidsNumberInput.getText();
-//            model.setNboids(Integer.valueOf(input));
-//        });
+        startStopButton.setText("Stop");
+
+        boidsNumberInput = new JTextField(10);
+        boidsNumberInput.setEnabled(true);
+        boidsNumberInput.addActionListener(e -> {
+            String input = boidsNumberInput.getText();
+            this.initializeWorkers = true;
+            model.setNboids(Integer.valueOf(input));
+        });
 
         startStopButton.addActionListener(e -> {
             startStopButton.setText(startStopButton.getText() == "Start" ? "Stop" : "Start");
             model.setIsRunning(!model.getIsRunning());
-            //boidsNumberInput.setEnabled(!model.getIsRunning());
+            boidsNumberInput.setEnabled(!model.getIsRunning());
+            model.resetBoids();
+        });
+
+        suspendResumeButton = new JButton();
+        suspendResumeButton.setText("Suspend");
+
+        suspendResumeButton.addActionListener(e -> {
+            suspendResumeButton.setText(suspendResumeButton.getText() == "Suspend" ? "Resume" : "Suspend");
+            model.setIsRunning(!model.getIsRunning());
+            boidsNumberInput.setEnabled(!model.getIsRunning());
         });
 
         controlPanel.add(startStopButton);
-        //controlPanel.add(new JLabel("Boids number"));
-        //controlPanel.add(boidsNumberInput);
+        controlPanel.add(suspendResumeButton);
+
+        controlPanel.add(new JLabel("Boids number"));
+        controlPanel.add(boidsNumberInput);
 
         slidersPanel.add(new JLabel("Separation"));
         slidersPanel.add(separationSlider);
@@ -105,7 +120,6 @@ public class BoidsView implements ChangeListener {
             var val = alignmentSlider.getValue();
             model.setAlignmentWeight(0.1 * val);
         }
-
     }
 
     public int getWidth() {
@@ -116,4 +130,11 @@ public class BoidsView implements ChangeListener {
         return height;
     }
 
+    public boolean isInitializeWorkers() {
+        return initializeWorkers;
+    }
+
+    public void setInitializeWorkers(boolean initializeWorkers) {
+        this.initializeWorkers = initializeWorkers;
+    }
 }

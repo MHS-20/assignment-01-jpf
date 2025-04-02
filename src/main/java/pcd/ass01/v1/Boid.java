@@ -2,6 +2,7 @@ package pcd.ass01.v1;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Boid {
@@ -26,11 +27,33 @@ public class Boid {
     }
 
     public P2d getPos() {
-        return pos;
+        readLock.lock();
+        try {
+            return pos;
+        } finally {
+            this.readUnlock();
+        }
+    }
+
+    private void readUnlock() {
+        readLock.unlock();
     }
 
     public V2d getVel() {
-        return vel;
+        readLock.lock();
+        try {
+            return vel;
+        } finally {
+            this.readUnlock();
+        }
+    }
+
+    public void setPos(P2d pos){
+        this.pos = pos;
+    }
+
+    public void setVel(V2d vel){
+        this.vel = vel;
     }
 
     public void update(BoidsModel model) {
@@ -82,7 +105,6 @@ public class Boid {
         if (speed > model.getMaxSpeed()) {
             vel = vel.getNormalized().mul(model.getMaxSpeed());
         }
-
         writeLock.unlock();
     }
 

@@ -34,7 +34,7 @@ public class BoidsSimulation {
     					ENVIRONMENT_WIDTH, ENVIRONMENT_HEIGHT,
     					MAX_SPEED,
     					PERCEPTION_RADIUS,
-    					AVOID_RADIUS); 
+    					AVOID_RADIUS);
     	var sim = new BoidsSimulator(model);
 
 		if(!headless){

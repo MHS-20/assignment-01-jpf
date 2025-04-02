@@ -32,10 +32,14 @@ public class BoidsSimulator {
         int cores = Runtime.getRuntime().availableProcessors();
 
         for (int i = 0; i < cores; i++) {
-            partitions.add(boids.subList(i * (boids.size() / cores), (boids.size() / cores) * (i + 1)));
+            partitions.add(
+                    //List.copyOf(
+                            boids.subList(i * (boids.size() / cores), (boids.size() / cores) * (i + 1))
+                    //)
+            );
         }
 
-        var velocityBarrier = new CyclicBarrier(cores + 1);
+        var velocityBarrier = new CyclicBarrier(cores);
         var positionBarrier = new CyclicBarrier(cores + 1);
 
 //        var collectDataBarrier = new CyclicBarrier(cores + 1);
@@ -53,23 +57,13 @@ public class BoidsSimulator {
             if (model.getIsRunning()) {
                 var t0 = System.currentTimeMillis();
 
-                /*
-                for (BoidWorker w : workers){
-                    if(!w.isAlive()){
-                        w.start();
-                    }
-                }*/
+                for (BoidWorker w: workers){
+                     w.setModel(model);
+                }
 
                 try {
-//                    for (Boid boid : partitions.get(0)) {
-//                        collectDataBarrier.await();
-//                        collectDataBarrier.reset();
-//                        writeDataBarrier.await();
-//                        writeDataBarrier.reset();
-//                    }
-
                     //System.out.println(Thread.currentThread().getName() + ": waiting on first barrier");
-                    velocityBarrier.await();
+                    //velocityBarrier.await();
                     //velocityBarrier.reset();
 
                     positionBarrier.await();
