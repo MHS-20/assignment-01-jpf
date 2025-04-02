@@ -69,7 +69,6 @@ public class BoidsView {
             this.isResetButtonPressed = true;
         });
 
-
         separationSlider = makeSlider();
         separationSlider.addChangeListener(l -> {
             var val = separationSlider.getValue();

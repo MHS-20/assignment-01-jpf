@@ -34,7 +34,8 @@ public class BoidsModel {
         this.perceptionRadius = perceptionRadius;
         this.avoidRadius = avoidRadius;
 
-        boids = Collections.synchronizedList(generateBoids(nBoids));
+        boids = generateBoids(nBoids);
+        //boids = Collections.synchronizedList(generateBoids(nBoids));
     }
 
     private List<Boid> generateBoids(int nBoids) {

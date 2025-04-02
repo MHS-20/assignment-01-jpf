@@ -15,3 +15,5 @@ Listeners JPF:
 
 
 ### Version 2
+Perché se metto while(true) invece di while(loop) non va?
+Se metto una stampa nel while(true) funziona, se la tolgo no.

@@ -20,7 +20,6 @@ public class BoidsSimulator {
     private Barrier computeVelocityBarrier;
     private Barrier updateVelocityBarrier;
     private Barrier upddatePositionBarrier;
-    private boolean isTime0Updated = false;
 
     public BoidsSimulator(BoidsModel model) {
         this.model = model;
@@ -77,7 +76,8 @@ public class BoidsSimulator {
             if (view.isPresent()) {
                 if (view.get().isRunning()) {
                     managerMonitor.startWork();
-                    updateTime0();
+                    t0 = System.currentTimeMillis();
+
                     if (upddatePositionBarrier.isBroken()) {
                         view.get().update(framerate);
                         updateFrameRate(t0);
@@ -98,15 +98,7 @@ public class BoidsSimulator {
         }
     }
 
-    private void updateTime0() {
-        if (!isTime0Updated) {
-            t0 = System.currentTimeMillis();
-            isTime0Updated = true;
-        }
-    }
-
     private void updateFrameRate(long t0) {
-        isTime0Updated = false;
         var t1 = System.currentTimeMillis();
         var dtElapsed = t1 - t0;
         var frameratePeriod = 1000 / FRAMERATE;
