@@ -19,7 +19,6 @@ public class BoidsSimulation {
 	static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	final static int SCREEN_WIDTH = 1400;
 	final static int SCREEN_HEIGHT = 600;
-	
 
     public static void main(String[] args) {      
     	var model = new BoidsModel(

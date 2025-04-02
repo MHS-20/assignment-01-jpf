@@ -2,29 +2,29 @@ package pcd.ass01.v1fix;
 
 import java.util.List;
 
-public class Worker extends Thread {
+public class BoidWorker extends Thread {
 
     private final List<Boid> boidsPartition;
     private final BoidsModel model;
     private final Monitor monitor;
-    private Barrier calVelBarrier;
-    private final Barrier updVelBarrier;
-    private final Barrier updPosBarrier;
+    private Barrier computeVelocityBarrier;
+    private final Barrier updateVelocityBarrier;
+    private final Barrier upddatePositionBarrier;
 
-    public Worker(String name,
-                  List<Boid> boidsPartition,
-                  BoidsModel model,
-                  Monitor monitor,
-                  Barrier calVelBarrier,
-                  Barrier updVelBarrier,
-                  Barrier updPosBarrier) {
+    public BoidWorker(String name,
+                      List<Boid> boidsPartition,
+                      BoidsModel model,
+                      Monitor monitor,
+                      Barrier computeVelocityBarrier,
+                      Barrier updateVelocityBarrier,
+                      Barrier upddatePositionBarrier) {
         super(name);
         this.boidsPartition = boidsPartition;
         this.model = model;
         this.monitor = monitor;
-        this.calVelBarrier = calVelBarrier;
-        this.updVelBarrier = updVelBarrier;
-        this.updPosBarrier = updPosBarrier;
+        this.computeVelocityBarrier = computeVelocityBarrier;
+        this.updateVelocityBarrier = updateVelocityBarrier;
+        this.upddatePositionBarrier = upddatePositionBarrier;
     }
 
     public void run() {
@@ -38,17 +38,17 @@ public class Worker extends Thread {
 
     private void calculateVelocityAndWaitBarrier() {
         boidsPartition.forEach(boid -> boid.calculateVelocity(model));
-        calVelBarrier.await();
+        computeVelocityBarrier.await();
     }
 
     private void updateVelocityAndWaitBarrier() {
         boidsPartition.forEach(boid -> boid.updateVelocity(model));
-        updVelBarrier.await();
+        updateVelocityBarrier.await();
     }
 
     private void updatePositionAndWaitBarrier() {
         boidsPartition.forEach(boid -> boid.updatePosition(model));
-        updPosBarrier.await();
+        upddatePositionBarrier.await();
     }
 
     private void log(String msg) {

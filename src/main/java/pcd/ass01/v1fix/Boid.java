@@ -88,13 +88,10 @@ public class Boid {
     }
     
     public void updatePosition(BoidsModel model) {
-
         /* Update position */
-
         pos = pos.sum(vel);
         
         /* environment wrap-around */
-        
         if (pos.x() < model.getMinX()) pos = pos.sum(new V2d(model.getWidth(), 0));
         if (pos.x() >= model.getMaxX()) pos = pos.sum(new V2d(-model.getWidth(), 0));
         if (pos.y() < model.getMinY()) pos = pos.sum(new V2d(0, model.getHeight()));

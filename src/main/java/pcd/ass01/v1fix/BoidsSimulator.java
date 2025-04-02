@@ -8,7 +8,7 @@ public class BoidsSimulator {
 
     private final BoidsModel model;
     private Optional<BoidsView> view;
-    private final List<Worker> workers = new ArrayList<>();
+    private final List<BoidWorker> boidWorkers = new ArrayList<>();
 
     private static final int FRAMERATE = 50;
     private int framerate;
@@ -16,9 +16,9 @@ public class BoidsSimulator {
     private final int N_WORKERS = CORES + 1;
     private long t0;
     private Monitor managerMonitor = new Monitor();
-    private Barrier calVelCycleBarrier;
-    private Barrier updVelCycleBarrier;
-    private Barrier updPosBarrier;
+    private Barrier computeVelocityBarrier;
+    private Barrier updateVelocityBarrier;
+    private Barrier upddatePositionBarrier;
     private boolean isTime0Updated = false;
 
     public BoidsSimulator(BoidsModel model) {
@@ -28,7 +28,7 @@ public class BoidsSimulator {
     }
 
     private void initWorkers() {
-        workers.clear();
+        boidWorkers.clear();
 
         List<List<Boid>> partitions = new ArrayList<>();
         for (int i = 0; i < N_WORKERS; i++) {
@@ -45,19 +45,19 @@ public class BoidsSimulator {
         }
 
         managerMonitor = new Monitor();
-        calVelCycleBarrier = new MyCyclicBarrier(N_WORKERS);
-        updVelCycleBarrier = new MyCyclicBarrier(N_WORKERS);
-        updPosBarrier = new MyBarrier(N_WORKERS);
+        computeVelocityBarrier = new MyCyclicBarrier(N_WORKERS);
+        updateVelocityBarrier = new MyCyclicBarrier(N_WORKERS);
+        upddatePositionBarrier = new MyBarrier(N_WORKERS);
 
         i = 0;
-        for (List<Boid> part : partitions) {
-            workers.add(new Worker("W" + i,
-                    part,
+        for (List<Boid> partition : partitions) {
+            boidWorkers.add(new BoidWorker("W" + i,
+                    partition,
                     model,
                     managerMonitor,
-                    calVelCycleBarrier,
-                    updVelCycleBarrier,
-                    updPosBarrier
+                    computeVelocityBarrier,
+                    updateVelocityBarrier,
+                    upddatePositionBarrier
             ));
             i++;
         }
@@ -66,7 +66,7 @@ public class BoidsSimulator {
     }
 
     private void startWorkers() {
-        workers.forEach(Worker::start);
+        boidWorkers.forEach(BoidWorker::start);
     }
 
     public void attachView(BoidsView view) {
@@ -79,10 +79,10 @@ public class BoidsSimulator {
                 if (view.get().isRunning()) {
                     managerMonitor.startWork();
                     updateTime0();
-                    if (updPosBarrier.isBroken()) {
+                    if (upddatePositionBarrier.isBroken()) {
                         view.get().update(framerate);
                         updateFrameRate(t0);
-                        updPosBarrier.reset();
+                        upddatePositionBarrier.reset();
                     }
                 } else {
                     managerMonitor.stopWork();

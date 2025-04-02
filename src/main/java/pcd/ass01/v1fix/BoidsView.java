@@ -9,9 +9,6 @@ import java.util.Hashtable;
 
 public class BoidsView {
 
-    public static final String PAUSE_STRING = "PAUSE";
-    private static final String PLAY_STRING = "PLAY";
-    private static final String RESET_STRING = "RESET";
     private final JButton resetButton;
     private JFrame frame;
     private BoidsPanel boidsPanel;
@@ -50,7 +47,7 @@ public class BoidsView {
             String text = nBoidsTextField.getText();
             if (!isNumeric(text)) {
                 nBoidsTextField.setBackground(Color.ORANGE);
-                nBoidsTextField.setText("PUT INTEGER");
+                nBoidsTextField.setText("Int only");
             } else {
                 nBoidsTextField.setBackground(Color.WHITE);
                 nBoidsTextField.setForeground(Color.GREEN);
@@ -58,19 +55,19 @@ public class BoidsView {
             }
         });
 
-        playButton = makeButton(PLAY_STRING);
+        playButton = makeButton("Resume");
         playButton.addActionListener(e -> {
             if (isRunning) {
                 pause();
-                playButton.setText(PLAY_STRING);
+                playButton.setText("Resume");
             } else {
                 play();
-                playButton.setText(PAUSE_STRING);
+                playButton.setText("Suspend");
                 nBoidsTextField.setForeground(Color.BLACK);
             }
         });
 
-        resetButton = makeButton(RESET_STRING);
+        resetButton = makeButton("Reset");
         resetButton.addActionListener(e -> {
             this.isResetButtonPressed = true;
         });
@@ -95,7 +92,7 @@ public class BoidsView {
         });
 
         slidersPanel.add(playButton);
-        slidersPanel.add(new JLabel("Set size end press Enter"));
+        slidersPanel.add(new JLabel("Size"));
         slidersPanel.add(nBoidsTextField);
         slidersPanel.add(resetButton);
         slidersPanel.add(new JLabel("Separation"));
