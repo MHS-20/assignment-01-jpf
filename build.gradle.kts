@@ -78,7 +78,7 @@ File(rootProject.rootDir.path + searchingPath).listFiles()
             main = "-jar"
             args = listOf(
                 "-jar",
-                "-Xmx6g",
+                "-Xmx2g",
                 "--add-opens", "java.base/jdk.internal.misc=ALL-UNNAMED",
                 "./jpf-runner/build/RunJPF.jar", ".${searchingPath}" + file.name
             )

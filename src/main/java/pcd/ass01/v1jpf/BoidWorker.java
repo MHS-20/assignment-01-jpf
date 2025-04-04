@@ -1,4 +1,4 @@
-package pcd.ass01.v1fix;
+package pcd.ass01.v1jpf;
 
 import java.util.List;
 
@@ -6,30 +6,26 @@ public class BoidWorker extends Thread {
 
     private final List<Boid> boidsPartition;
     private final BoidsModel model;
-    private final Monitor monitor;
-    private Barrier computeVelocityBarrier;
-    private final Barrier updateVelocityBarrier;
-    private final Barrier upddatePositionBarrier;
+    private final MyCyclicBarrierLocks computeVelocityBarrier;
+    private final MyCyclicBarrierLocks updateVelocityBarrier;
+    private final MyCyclicBarrierLocks updatePositionBarrier;
 
     public BoidWorker(String name,
                       List<Boid> boidsPartition,
                       BoidsModel model,
-                      Monitor monitor,
-                      Barrier computeVelocityBarrier,
-                      Barrier updateVelocityBarrier,
-                      Barrier upddatePositionBarrier) {
+                      MyCyclicBarrierLocks computeVelocityBarrier,
+                      MyCyclicBarrierLocks updateVelocityBarrier,
+                      MyCyclicBarrierLocks updatePositionBarrier) {
         super(name);
         this.boidsPartition = boidsPartition;
         this.model = model;
-        this.monitor = monitor;
         this.computeVelocityBarrier = computeVelocityBarrier;
         this.updateVelocityBarrier = updateVelocityBarrier;
-        this.upddatePositionBarrier = upddatePositionBarrier;
+        this.updatePositionBarrier = updatePositionBarrier;
     }
 
     public void run() {
-        while (true) {
-            monitor.waitUntilWorkStart();
+        while (!Thread.currentThread().isInterrupted()) {
             computeVelocity();
             updateVelocity();
             updatePosition();
@@ -48,7 +44,7 @@ public class BoidWorker extends Thread {
 
     private void updatePosition() {
         boidsPartition.forEach(boid -> boid.updatePosition(model));
-        upddatePositionBarrier.await();
+        updatePositionBarrier.await();
     }
 
     private void log(String msg) {

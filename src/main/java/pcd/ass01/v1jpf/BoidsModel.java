@@ -1,7 +1,6 @@
-package pcd.ass01.v1fix;
+package pcd.ass01.v1jpf;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class BoidsModel {
@@ -34,15 +33,26 @@ public class BoidsModel {
         this.perceptionRadius = perceptionRadius;
         this.avoidRadius = avoidRadius;
 
-        boids = generateBoids(nBoids);
+        boids = generateFixedBoids(nBoids);
         //boids = Collections.synchronizedList(generateBoids(nBoids));
     }
 
-    private List<Boid> generateBoids(int nBoids) {
-        List<Boid> boids = new ArrayList<Boid>();
-        for (int i = 0; i < nBoids; i++) {
-            P2d pos = new P2d(-width / 2 + Math.random() * width, -height / 2 + Math.random() * height);
-            V2d vel = new V2d(Math.random() * maxSpeed / 2 - maxSpeed / 4, Math.random() * maxSpeed / 2 - maxSpeed / 4);
+//    private List<Boid> generateBoids(int nBoids) {
+//        List<Boid> boids = new ArrayList<Boid>();
+//        for (int i = 0; i < nBoids; i++) {
+//            P2d pos = new P2d(-width / 2 + Math.random() * width, -height / 2 + Math.random() * height);
+//            V2d vel = new V2d(Math.random() * maxSpeed / 2 - maxSpeed / 4, Math.random() * maxSpeed / 2 - maxSpeed / 4);
+//            boids.add(new Boid(pos, vel));
+//        }
+//        return boids;
+//    }
+
+    // jpf
+    private List<Boid> generateFixedBoids(int nboids) {
+        boids = new ArrayList<>();
+        for (int i = 0; i < nboids; i++) {
+            P2d pos = new P2d(-width / 2 + 4000 * width, -height / 2 + 6 * height);
+            V2d vel = new V2d(2 * maxSpeed / 2 - maxSpeed / 4, 9000 * maxSpeed / 2 - maxSpeed / 4);
             boids.add(new Boid(pos, vel));
         }
         return boids;
@@ -114,6 +124,6 @@ public class BoidsModel {
 
     public void resetBoids(int sizeBoids) {
         boids.clear();
-        boids = generateBoids(sizeBoids);
+        boids = generateFixedBoids(sizeBoids);
     }
 }
